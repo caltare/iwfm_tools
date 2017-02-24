@@ -10,7 +10,7 @@ zone <- 33
 
 SRI <- read_csv("U:\\River.Indices.csv")
 SRI$index.classification <- as.factor(SRI$index.classification) %>%
-  fct_relevel("wet", "above.normal", "below.normal", "dry", "critical")
+  fct_relevel("wet", "above normal", "below.normal", "dry", "critical")
 
 
 zbDSS <- opendss("U:\\C2VSim_CG_1972IC_R374_Model\\C2VSim_CG_1972IC_R374\\Results\\zbudget_GWBasins_All.dss")
