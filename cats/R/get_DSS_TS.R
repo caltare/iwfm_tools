@@ -11,8 +11,8 @@
 
 getDSS <- function(dssFile, zone, component){
   pth <- paste0("/*/ZONE:",zone,"/*/*/*/",component,"/")
-  pths <- getPaths(dssFile, pth)
-  x <- getFullTSC(dssFile, pths) %>%
-    tidy(x) %>%
-    mutate(index=index-1)
+  pths <- dssrip::getPaths(dssFile, pth)
+  x <- dssrip::getFullTSC(dssFile, pths) %>%
+    broom::tidy(x) %>%
+    dplyr::mutate(index=index-1)
 }
