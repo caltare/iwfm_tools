@@ -15,10 +15,10 @@ SRI$index.classification <- as.factor(SRI$index.classification) %>%
 
 zbDSS <- opendss("U:\\C2VSim_CG_1972IC_R374_Model\\C2VSim_CG_1972IC_R374\\Results\\zbudget_GWBasins_All.dss")
 
-getDSS <- function(zone, component){
+getDSS <- function(dssFile, zone, component){
   pth <- paste0("/*/ZONE:",zone,"/*/*/*/",component,"/")
-  pths <- getPaths(zbDSS, pth)
-  x <- getFullTSC(zbDSS,pths) %>%
+  pths <- getPaths(dssFile, pth)
+  x <- getFullTSC(dssFile, pths) %>%
     tidy(x) %>%
     mutate(index=index-1)
 }
@@ -35,8 +35,17 @@ wtr_yr <- function(dates, start_month=10) {
 }
 
 
-storage.in <- getDSS(zone, "GW STORAGE_IN")
-storage.out <- getDSS(zone, "GW STORAGE_OUT")
+storage.in <- getDSS(zbDSS ,zone, "GW STORAGE_IN")
+storage.out <- getDSS(zbDSS, zone, "GW STORAGE_OUT")
 storage.net <- data.frame(index=storage.in$index,
                           component="STORAGE_NET",
                           value=storage.out$value - storage.in$value)
+storage.net.WY <- storage.net %>%
+  mutate(water.year=wtr_yr(index)) %>%
+  group_by(component,water.year) %>%
+  summarise(value = sum(value)) %>%
+  filter(water.year >= minYear, water.year <= maxYear)
+
+cumul.storage.net.WY <- tibble(component = factor('CUMULATIVE_CHANGE_STORAGE'),
+                               water.year = storage.net.WY$water.year,
+                               value = cumsum(storage.net.WY$value))
